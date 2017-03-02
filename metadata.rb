@@ -12,4 +12,3 @@ supports 'centos', '>= 7.0'
 supports 'redhat', '>= 7.0'
 
 depends 'ark'
-depends 'systemd'

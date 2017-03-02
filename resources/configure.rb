@@ -26,20 +26,15 @@ property :configuration, Hash, required: true
 default_action :configure
 
 action :configure do
-  systemd_service new_resource.svc_name do
-    description 'Kibana Backend'
-    after %w(network.target remote-fs.target nss-lookup.target)
-    install do
-      wanted_by 'multi-user.target'
-    end
-    service do
-      environment 'LANG' => 'C'
-      user new_resource.svc_user
-      restart 'always'
-      exec_start node['kibana5']['exec_file']
-    end
+
+  template '/usr/lib/systemd/system/kibana.service'  do
+    source 'kibana.service.erb'
+    mode '0755'
+    variables user: new_resource.svc_user, exec_file: node['kibana5']['exec_file']
+    notifies :restart, "service[#{new_resource.svc_name}]", :delayed
   end
 
+  
   config = new_resource.configuration
 
   file config['logging.dest'] do
@@ -60,6 +55,7 @@ action :configure do
   end
 
   service new_resource.svc_name do
+    provider Chef::Provider::Service::Systemd
     supports start: true, restart: true, stop: true, status: true
     action [:enable, :start]
   end

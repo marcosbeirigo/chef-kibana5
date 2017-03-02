@@ -1,0 +1,10 @@
+[Unit]
+Description="Kibana 5.2.1"
+
+[Service]
+User=<%= @user %>
+Restart=always
+ExecStart=<%= exec_file %>
+
+[Install]
+WantedBy=multi-user.target
